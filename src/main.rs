@@ -1,4 +1,4 @@
-use filters::filters::kuwahara;
+use filters::filters::*;
 use std::fs;
 
 fn main() {
@@ -12,12 +12,12 @@ fn main() {
                     println!("[Processing {}]", filename);
                     let source = format!("./img/{}", filename);
                     let image = image::open(source).unwrap();
-                    // let result = kuwahara::filter(&image);
-                    // let destination = format!("./img/kuwahara/{}", filename);
-                    // result.save(destination).unwrap();
-                    let result = kuwahara::generalized_filter(&image);
-                    let destination = format!("./img/kuwahara/generalized/{}", filename);
-                    let _ = result.save(destination).unwrap();
+                    let result = kuwahara::normal_filter(&image);
+                    let destination = format!("./img/kuwahara/{}", filename);
+                    result.save(destination).unwrap();
+                    // let result = kuwahara::generalized_filter(&image);
+                    // let destination = format!("./img/kuwahara/generalized/{}", filename);
+                    // let _ = result.save(destination).unwrap();
                 }
             }
             None => (),

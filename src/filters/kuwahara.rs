@@ -19,10 +19,9 @@ fn standard_deviation(pixels: &Vec<image::Rgb<u8>>, average: &image::Rgb<u8>) ->
 }
 
 const WINDOW_SIZE: i32 = 3;
-// const WINDOW_SIZE: i32 = 8;
 const QUADRANT_OFFSETS: [(i32, i32); 4] = [(-1, -1), (0, -1), (-1, 0), (0, 0)];
 
-pub fn filter(reference: &DynamicImage) -> RgbImage {
+pub fn normal_filter(reference: &DynamicImage) -> RgbImage {
     let (width, height) = reference.dimensions();
     let mut buffer = RgbImage::new(width, height);
     for (x0, y0, buffer_pixel) in buffer.enumerate_pixels_mut().progress() {
