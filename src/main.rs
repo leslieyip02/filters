@@ -12,12 +12,9 @@ fn main() {
                     println!("[Processing {}]", filename);
                     let source = format!("./img/{}", filename);
                     let image = image::open(source).unwrap();
-                    let result = kuwahara::normal_filter(&image);
-                    let destination = format!("./img/kuwahara/{}", filename);
-                    result.save(destination).unwrap();
-                    // let result = kuwahara::generalized_filter(&image);
-                    // let destination = format!("./img/kuwahara/generalized/{}", filename);
-                    // let _ = result.save(destination).unwrap();
+                    let result = blur::box_blur(&image);
+                    let destination = format!("./img/blur/box/{}", filename);
+                    let _ = result.save(destination).unwrap();
                 }
             }
             None => (),
