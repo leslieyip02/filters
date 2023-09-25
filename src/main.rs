@@ -12,8 +12,8 @@ fn main() {
                     println!("[Processing {}]", filename);
                     let source = format!("./img/{}", filename);
                     let image = image::open(source).unwrap();
-                    let result = blur::box_blur(&image);
-                    let destination = format!("./img/blur/box/{}", filename);
+                    let result = blur::gaussian_blur(&image);
+                    let destination = format!("./img/blur/gaussian/{}", filename);
                     let _ = result.save(destination).unwrap();
                 }
             }

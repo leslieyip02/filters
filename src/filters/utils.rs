@@ -25,3 +25,15 @@ pub fn average_squared_rgb(pixels: &Vec<image::Rgb<u8>>) -> image::Rgb<u8> {
     let rgb_means = rgb_sums.map(|v| (v / n).sqrt() as u8);
     image::Rgb(rgb_means)
 }
+
+pub fn weighted_average_rgb(pixels: &Vec<image::Rgb<u8>>, weights: &Vec<f64>) -> image::Rgb<u8> {
+    let mut rgb_sums = [0.0, 0.0, 0.0];
+    for (pixel, weight) in pixels.iter().zip(weights) {
+        pixel
+            .0
+            .iter()
+            .enumerate()
+            .for_each(|(i, &value)| rgb_sums[i] += value as f64 * weight);
+    }
+    image::Rgb(rgb_sums.map(|value| value.ceil() as u8))
+}
