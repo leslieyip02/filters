@@ -21,32 +21,54 @@ fn standard_deviation(pixels: &Vec<image::Rgb<u8>>, average: &image::Rgb<u8>) ->
 const WINDOW_SIZE: i32 = 3;
 const QUADRANT_OFFSETS: [(i32, i32); 4] = [(-1, -1), (0, -1), (-1, 0), (0, 0)];
 
-pub fn normal_filter(reference: &DynamicImage) -> RgbImage {
+pub fn normal_filter(reference: &DynamicImage, window_size: Option<i32>) -> RgbImage {
+    let window_size = match window_size {
+        Some(size) => size,
+        None => WINDOW_SIZE
+    };
+
     let (width, height) = reference.dimensions();
     let mut buffer = RgbImage::new(width, height);
+    let cache_width = width as usize + window_size as usize + 1;
+    let cache_height = height as usize + window_size as usize + 1;
+    let mut averages = vec![vec![Rgb([0 as u8; 3]); cache_width]; cache_height];
+    let mut standard_deviations = vec![vec![-1.0; cache_width]; cache_height];
     for (x0, y0, buffer_pixel) in buffer.enumerate_pixels_mut().progress() {
         let mut most_homogenous = f64::MAX;
         let mut resulting_pixel: Rgb<u8> = *buffer_pixel;
         for (ox, oy) in QUADRANT_OFFSETS {
-            let mut quadrant = Vec::<Rgb<u8>>::new();
-            for i in 0..WINDOW_SIZE {
-                let x1 = x0 as i32 + (ox * WINDOW_SIZE) + i;
-                if x1 < 0 || x1 >= width as i32 {
-                    continue;
-                }
-
-                for j in 0..WINDOW_SIZE {
-                    let y1 = y0 as i32 + (oy * WINDOW_SIZE) + j;
-                    if y1 < 0 || y1 >= height as i32 {
+            let x1 = (x0 as i32 + window_size + ox * window_size) as usize;
+            let y1 = (y0 as i32 + window_size + oy * window_size) as usize;
+            if standard_deviations[y1][x1] == -1.0 {
+                let mut quadrant = Vec::<Rgb<u8>>::new();
+                for i in 0..window_size {
+                    let x2 = x0 as i32 + (ox * window_size) + i;
+                    if x2 < 0 || x2 >= width as i32 {
                         continue;
                     }
 
-                    let quadrant_pixel = reference.get_pixel(x1 as u32, y1 as u32).to_rgb();
-                    quadrant.push(quadrant_pixel);
+                    for j in 0..window_size {
+                        let y2 = y0 as i32 + (oy * window_size) + j;
+                        if y2 < 0 || y2 >= height as i32 {
+                            continue;
+                        }
+
+                        let quadrant_pixel = reference.get_pixel(x2 as u32, y2 as u32).to_rgb();
+                        quadrant.push(quadrant_pixel);
+                    }
                 }
+                let average = average_rgb(&quadrant);
+                let standard_deviation = standard_deviation(&quadrant, &average);
+                if standard_deviation < most_homogenous {
+                    most_homogenous = standard_deviation;
+                    resulting_pixel = average;
+                }
+                averages[y1][x1] = average;
+                standard_deviations[y1][x1] = standard_deviation;
             }
-            let average = average_rgb(&quadrant);
-            let standard_deviation = standard_deviation(&quadrant, &average);
+
+            let average = averages[y1][x1];
+            let standard_deviation = standard_deviations[y1][x1];
             if standard_deviation < most_homogenous {
                 most_homogenous = standard_deviation;
                 resulting_pixel = average;
