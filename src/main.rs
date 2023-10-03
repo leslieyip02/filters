@@ -12,8 +12,8 @@ fn main() {
                     println!("[Processing {}]", filename);
                     let source = format!("./img/{}", filename);
                     let image = image::open(source).unwrap();
-                    let result = unsharp::unsharp_masking(&image);
-                    let destination = format!("./img/unsharp/{}", filename);
+                    let result = sepia::sepia_filter(&image);
+                    let destination = format!("./img/sepia/{}", filename);
                     let _ = result.save(destination).unwrap();
                 }
             }
