@@ -5,4 +5,4 @@ The [Kuwahara filter](https://en.wikipedia.org/wiki/Kuwahara_filter) is a smooth
 Original                 | Filtered
 -------------------------|------------------------------------
 ![original](../img5.jpg) | ![filtered](./generalized/img5.jpg)
-![original](../img3.png) | ![filtered](./normal/img3.png)
+![original](../img7.jpg) | ![filtered](./normal/img7.jpg)
